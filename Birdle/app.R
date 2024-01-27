@@ -1,45 +1,15 @@
 #Yet to do
 
-#Source calls from Xeno canto website
-#Set up github
-#Add more birds
 #Put on website
-#Make display the same on desktop of phone
-#social media share on whatsapp see https://rpubs.com/oobianom/share-button-connect-like-shiny-quarto-social-add
 
 library(shiny)
 library(shinyWidgets)
 library(shinyBS)
 library(shinyjs)
 
-NoOfSounds <- 5
-BirdNames  <- c("Chaffinch","Tomtit","Robin","Thrush","Blackbird")
-NoOfBirds  <- length(BirdNames)
-SoundBirds <- sample(seq_len(NoOfBirds),NoOfSounds,replace=TRUE)
+BirdleSetupData <- readRDS(file="data/BirdleInitialisationData.rds")
 
-SoundButtons <- lapply(seq_len(NoOfSounds), function(SoundNo) {
-  SoundID <- paste0("Sound",SoundNo)
-  actionButton(SoundID,label=NULL,icon = icon("play"))
-})
-
-#Prepare the bird buttons
-BirdButtons <- lapply(seq_len(NoOfBirds), function(BirdNo) {
-  BirdID <- paste0("Bird",BirdNo)
-  BirdImageFile <- paste0(BirdNames[BirdNo],".png")
-  ToolTip <- BirdNames[BirdNo]
-  
-  #Specify the custom style javascript needed when creating the button, complete with image file
-  StyleDetails <- paste0("width: 50px; height: 50px; background: url('",BirdImageFile,"'); background-size: cover; background-position: center;")
-  
-  #Create the button
-  Button <- actionButton(BirdID,label=NULL,style=StyleDetails)
-  
-  #Add tool tip
-  ButtonWithTooltip <- tipify(Button,title=ToolTip)
-  return(ButtonWithTooltip)
-})
-
-BirdButtonIDs <- paste0("Bird",seq_len(NoOfBirds))
+list2env(BirdleSetupData,envir = .GlobalEnv)
 
 ui <- tagList(
   tags$style("html,body{background-color: white;}

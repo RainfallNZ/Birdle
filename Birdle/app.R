@@ -23,7 +23,7 @@ ui <- tagList(
              tags$script("var snd;"),
              
              #Set the title
-             titlePanel(h1("Birdle",align="center")),
+             titlePanel(h1("Birdle",align="center"),windowTitle = "Birdle"),
              
              #Add the bird sound buttons
              fluidRow(align="center",do.call(fluidRow, SoundButtons)),

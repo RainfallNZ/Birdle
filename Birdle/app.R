@@ -1,7 +1,3 @@
-#Yet to do
-
-#Put on website
-
 library(shiny)
 library(shinyWidgets)
 library(shinyBS)
@@ -12,7 +8,7 @@ BirdleSetupData <- readRDS(file="data/BirdleInitialisationData.rds")
 list2env(BirdleSetupData,envir = .GlobalEnv)
 
 ui <- tagList(
-  tags$div(class="container",
+  tags$div(id='Everything',class="container",
            fluidPage(
              tags$head(
                tags$script(
@@ -25,13 +21,13 @@ ui <- tagList(
              ),
              useShinyjs(),
              tags$script("var snd;"),
-
+             
              #Set the title
              titlePanel(h1("Birdle",align="center")),
              
              #Add the bird sound buttons
-               fluidRow(align="center",do.call(fluidRow, SoundButtons)),
-
+             fluidRow(align="center",do.call(fluidRow, SoundButtons)),
+             
              #Add the timing counter 
              h2(textOutput("Counter"),align="center"),
              
@@ -65,25 +61,64 @@ server <- function(input, output, session) {
     #Figure out which button was clicked
     observeEventTrigger(req(input$changed))
     SoundNo <- gsub("Sound","",observeEventTrigger())
+    print(SoundNo)
     
     #Update the reactive value that keeps track of which sound was last played. This is needed for other observers.
     isolate({CurrentSound(SoundNo)})
     
     #Get the current sound's button ID
     CurrentSoundButtonID <- paste0("Sound",SoundNo)
+  })
+  
+  #This observer is for controlling the sound. It is all in javascript to enable 
+  #correct operation on IOS devices.See https://stackoverflow.com/questions/73934037/stop-all-audio-when-a-new-one-is-playing
+  #I haven't seen this issue referenced with respect to RShiny
+  observe(priority = 1, {
+    JavascriptText <- "
     
-    #Pause any sounds that may be already running
-    shinyjs::runjs("snd.pause();")
+    function pauseAudio() {
+          if(snd && !snd.paused) {   // Pause and rewind any currently playing audio
+        snd.pause(); 
+        snd.currentTime = 0;
+       };
+    }
+    function playAudio(src) {
+      pauseAudio()   // Pause and rewind any currently playing audio
+      snd = new Audio(src);      // Save a reference
+      snd.play();
+    }
+
+    const button = document.getElementById('Sound1');
+    const button2 = document.getElementById('Sound2');
+    const button3 = document.getElementById('Sound3');
+    const button4 = document.getElementById('Sound4');
+    const button5 = document.getElementById('Sound5');
     
-    #Create the java script text needed to start this button's sound file
-    BirdNoRelatedToThisSoundButton <- SoundBirds[as.numeric(SoundNo)]
-    print(BirdNoRelatedToThisSoundButton)
-    BirdName <- BirdNames[BirdNoRelatedToThisSoundButton]
-    print(BirdName)
-    jstext <- paste0("snd = new Audio('",BirdName,".mp3'); snd.play();")
-    
-    #Play the sound file
-    shinyjs::runjs(jstext)
+    const Birds = document.querySelectorAll('button[id^=Bird]');
+
+    let snd = null;
+        
+    button.addEventListener('click', () => {
+          playAudio('Sound1.mp3')
+        });
+    button2.addEventListener('click', () => {
+           playAudio('Sound2.mp3')
+        })
+    button3.addEventListener('click', () => {
+           playAudio('Sound3.mp3')
+        })
+    button4.addEventListener('click', () => {
+           playAudio('Sound4.mp3')
+        })
+    button5.addEventListener('click', () => {
+           playAudio('Sound5.mp3')
+        })
+    //Turn off sound if any Bird button is clicked    
+    Birds.forEach(Bird => {
+      Bird.addEventListener('click', () => {pauseAudio()})
+    })
+    "
+    shinyjs::runjs(JavascriptText)
   })
   
   #This observer is for when one of the bird buttons is clicked
@@ -101,26 +136,27 @@ server <- function(input, output, session) {
         
         #Get the current sound's button ID
         CurrentSoundButtonID <- paste0("Sound",CurrentSound())
-        
+        print(CurrentSoundButtonID)
+        browser
         #Update the record of which sounds have been answered
         if(CurrentSoundButtonID %in% c("Sound1","Sound2","Sound3","Sound4","Sound5")){
           Answered[[CurrentSoundButtonID]] <- 1
-        }
-        
-        #Disable the current sound's button
-        shinyjs::disable(CurrentSoundButtonID)
-        
-        #Check to see if the sound and the bird are a match
-        if (SoundBirds[as.numeric(CurrentSound())] == BirdNo) {
-          #Update the current sound's button style to green
-          updateButton(session, inputId = CurrentSoundButtonID, style = "success")
           
-          #Update the record of which sounds have been correctly answered
-          CorrectAnswers[[CurrentSoundButtonID]] <- 1
-        } else {
-          #Update the current sound's button style to red
-          updateButton(session, inputId = CurrentSoundButtonID, style = "danger")}
-        
+          
+          #Disable the current sound's button
+          shinyjs::disable(CurrentSoundButtonID)
+          
+          #Check to see if the sound and the bird are a match
+          if (SoundBirds[as.numeric(CurrentSound())] == BirdNo) {
+            #Update the current sound's button style to green
+            updateButton(session, inputId = CurrentSoundButtonID, style = "success")
+            
+            #Update the record of which sounds have been correctly answered
+            CorrectAnswers[[CurrentSoundButtonID]] <- 1
+          } else {
+            #Update the current sound's button style to red
+            updateButton(session, inputId = CurrentSoundButtonID, style = "danger")}
+        }
         #Check if all the sounds have been answered
         if(NoAnswered()==5){
           

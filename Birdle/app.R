@@ -12,19 +12,6 @@ BirdleSetupData <- readRDS(file="data/BirdleInitialisationData.rds")
 list2env(BirdleSetupData,envir = .GlobalEnv)
 
 ui <- tagList(
-  tags$style("html,body{background-color: white;}
-                .container{
-                    width: 100%;
-                    margin: 0 auto;
-                    padding: 0;
-                }
-               @media screen and (min-width: 700px){
-                .container{
-                    min-width: 200px;
-                    max-width: 400px;
-                }
-               }
-             "),
   tags$div(class="container",
            fluidPage(
              tags$head(
@@ -38,21 +25,19 @@ ui <- tagList(
              ),
              useShinyjs(),
              tags$script("var snd;"),
-             HTML('<meta name="viewport" content="width=1024">'),
-             
+
              #Set the title
              titlePanel(h1("Birdle",align="center")),
              
              #Add the bird sound buttons
-               do.call(fluidRow, SoundButtons),
-             
+               fluidRow(align="center",do.call(fluidRow, SoundButtons)),
+
              #Add the timing counter 
              h2(textOutput("Counter"),align="center"),
              
-             #Add all the bird option buttons
-             do.call(fluidRow, BirdButtons),
+             #Add all the bird option buttons in a fluid row that is wrapped in a fluid row with centre allignment
+             fluidRow(align="center",do.call(fluidRow, BirdButtons)),
            )))
-
 
 # Define server logic required to connect sounds to birds
 server <- function(input, output, session) {

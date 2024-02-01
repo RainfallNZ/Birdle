@@ -10,14 +10,20 @@ ShinyWWWDirectory     <- "D:\\Projects\\Birdle\\Birdle\\www"
 ProjectSoundFiles     <-   "D:\\Projects\\Birdle\\SoundFiles"
 
 NoOfSounds <- 5
-BirdNames  <- c("Chaffinch","Miromiro","Kakaruai","Thrush","Blackbird",
+AllBirdNames  <- c("Chaffinch","Miromiro","Kakaruai","Thrush","Blackbird",
                 "Pipipi","Tauhou","Riroriro","Korimako","Kakariki",
-                "Tititipounamu")
-BirdToolTips <- c("Chaffinch<br/>Pahirini","Miromiro<br/>Tomtit","Kakaruai<br/>Robin","Thrush<br/>Manu-kai-hua-rakau","Blackbird<br/>Manu pango",
+                "Tititipounamu","Piwakawaka")
+AllBirdToolTips <- c("Chaffinch<br/>Pahirini","Miromiro<br/>Tomtit","Kakaruai<br/>Robin","Thrush<br/>Manu-kai-hua-rakau","Blackbird<br/>Manu pango",
                   "Pipipi<br/>Brown creeper","Tauhou<br/>Silvereye","Riroriro<br/>Grey warbler","Korimako<br/>Bellbird","Kakariki<br/>Parakeet",
-                  "Tititipounamu<br/>Rifleman")
-NoOfBirds  <- length(BirdNames)
-SoundBirds <- sample(seq_len(NoOfBirds),NoOfSounds,replace=FALSE)
+                  "Tititipounamu<br/>Rifleman","Piwakawaka<br/>Fantail")
+TotalBirds <- length(AllBirdNames)
+NoOfBirdButtons  <- 9
+BirdSampleIndices <- sample(seq_len(TotalBirds),NoOfBirdButtons,replace=FALSE)
+
+BirdNames    <- AllBirdNames[BirdSampleIndices]
+BirdToolTips <- AllBirdToolTips[BirdSampleIndices]
+
+SoundBirds <- sample(seq_len(NoOfBirdButtons),NoOfSounds,replace=FALSE)
 
 SoundButtons <- lapply(seq_len(NoOfSounds), function(SoundNo) {
   SoundID <- paste0("Sound",SoundNo)
@@ -25,7 +31,7 @@ SoundButtons <- lapply(seq_len(NoOfSounds), function(SoundNo) {
 })
 
 #Prepare the bird buttons
-BirdButtons <- lapply(seq_len(NoOfBirds), function(BirdNo) {
+BirdButtons <- lapply(seq_len(NoOfBirdButtons), function(BirdNo) {
   BirdID <- paste0("Bird",BirdNo)
   BirdImageFile <- paste0(BirdNames[BirdNo],".png")
   ToolTip <- BirdToolTips[BirdNo]
@@ -62,7 +68,7 @@ for (SoundIndex in seq_len(NoOfSounds)) {
 
 
 #Put all of these objects in a list and save to an RData file
-BirdleSetupData <- list("NoOfSounds"=NoOfSounds, "BirdNames" = BirdNames,"NoOfBirds"=NoOfBirds,"SoundBirds"=SoundBirds,"SoundButtons"=SoundButtons,"BirdButtons"=BirdButtons)
+BirdleSetupData <- list("NoOfSounds"=NoOfSounds, "BirdNames" = BirdNames,"NoOfBirds"=NoOfBirdButtons,"SoundBirds"=SoundBirds,"SoundButtons"=SoundButtons,"BirdButtons"=BirdButtons)
 saveRDS(BirdleSetupData, file=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"))
 
 #And copy to the Rainfall.NZ's Digital Ocean shiny-server, using curl. Note that I must have write 

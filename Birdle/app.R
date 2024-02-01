@@ -34,9 +34,8 @@ ui <- tagList(
              #Add all the bird option buttons in a fluid row that is wrapped in a fluid row with centre allignment
              fluidRow(align="center",width=12,do.call(fluidRow, BirdButtons[1:3])),
              fluidRow(align="center",do.call(fluidRow, BirdButtons[4:6])),
-             fluidRow(align="center",do.call(fluidRow, BirdButtons[7:9])),
-             fluidRow(align="center",do.call(fluidRow, BirdButtons[10:11])),
-           )))
+             fluidRow(align="center",do.call(fluidRow, BirdButtons[7:9])))
+           ))
 
 # Define server logic required to connect sounds to birds
 server <- function(input, output, session) {
@@ -140,11 +139,9 @@ server <- function(input, output, session) {
         #Get the current sound's button ID
         CurrentSoundButtonID <- paste0("Sound",CurrentSound())
         print(CurrentSoundButtonID)
-        browser
         #Update the record of which sounds have been answered
         if(CurrentSoundButtonID %in% c("Sound1","Sound2","Sound3","Sound4","Sound5")){
           Answered[[CurrentSoundButtonID]] <- 1
-          
           
           #Disable the current sound's button
           shinyjs::disable(CurrentSoundButtonID)
@@ -164,7 +161,7 @@ server <- function(input, output, session) {
         if(NoAnswered()==5){
           
           #Wait for 3 seconds, and if they're not all correctly answered then reset the sound buttons and the records of which sounds have been answered and correctly answered
-          shinyjs::delay(3000, 
+          shinyjs::delay(1500, 
                          if(NoOfCorrectAnswers() !=5) {
                            for (SoundNo in seq_len(NoOfSounds)){
                              SoundID <- paste0("Sound",SoundNo)

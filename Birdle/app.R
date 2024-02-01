@@ -27,12 +27,15 @@ ui <- tagList(
              
              #Add the bird sound buttons
              fluidRow(align="center",do.call(fluidRow, SoundButtons)),
-             
+
              #Add the timing counter 
              h2(textOutput("Counter"),align="center"),
              
              #Add all the bird option buttons in a fluid row that is wrapped in a fluid row with centre allignment
-             fluidRow(align="center",do.call(fluidRow, BirdButtons)),
+             fluidRow(align="center",width=12,do.call(fluidRow, BirdButtons[1:3])),
+             fluidRow(align="center",do.call(fluidRow, BirdButtons[4:6])),
+             fluidRow(align="center",do.call(fluidRow, BirdButtons[7:9])),
+             fluidRow(align="center",do.call(fluidRow, BirdButtons[10:11])),
            )))
 
 # Define server logic required to connect sounds to birds

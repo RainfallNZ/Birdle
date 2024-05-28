@@ -1,9 +1,12 @@
 #Script to be run each day to update the Birdle web app
 
-library(shiny)
-library(shinyWidgets)
-library(shinyBS)
-library(shinyjs)
+#load libraries
+list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages,repos='https://cloud.r-project.org')
+
+librariesToLoad <- list.of.packages[!(list.of.packages %in% (.packages()))]
+if(length(librariesToLoad)) sapply(librariesToLoad, library, character.only = TRUE)
 
 ShinyAppDataDirectory <- "D:\\Projects\\Birdle\\Birdle\\data"
 ShinyWWWDirectory     <- "D:\\Projects\\Birdle\\Birdle\\www"

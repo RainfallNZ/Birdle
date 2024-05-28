@@ -1,7 +1,10 @@
-library(shiny)
-library(shinyWidgets)
-library(shinyBS)
-library(shinyjs)
+#load libraries
+list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages,repos='https://cloud.r-project.org')
+
+librariesToLoad <- list.of.packages[!(list.of.packages %in% (.packages()))]
+if(length(librariesToLoad)) sapply(librariesToLoad, library, character.only = TRUE)
 
 BirdleSetupData <- readRDS(file="data/BirdleInitialisationData.rds")
 
@@ -19,6 +22,7 @@ ui <- tagList(
         });"
                )
              ),
+             tags$head(tags$link(rel="shortcut icon", href="favicon.ico")),
              useShinyjs(),
              tags$script("var snd;"),
              

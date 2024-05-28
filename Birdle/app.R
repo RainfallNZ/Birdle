@@ -1,10 +1,9 @@
 #load libraries
-list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs")
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages,repos='https://cloud.r-project.org')
-
-librariesToLoad <- list.of.packages[!(list.of.packages %in% (.packages()))]
-if(length(librariesToLoad)) sapply(librariesToLoad, library, character.only = TRUE)
+#Note that the Shiny app server can't use an sapply() to load libraries
+if (!require(shiny)) install.packages('shiny'); library(shiny) 
+if (!require(shinyWidgets)) install.packages('shinyWidgets'); library(shinyWidgets) 
+if (!require(shinyBS)) install.packages('shinyBS'); library(shinyBS) 
+if (!require(shinyjs)) install.packages('shinyjs'); library(shinyjs) 
 
 BirdleSetupData <- readRDS(file="data/BirdleInitialisationData.rds")
 

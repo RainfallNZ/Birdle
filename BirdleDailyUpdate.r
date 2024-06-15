@@ -1,4 +1,10 @@
-#Script to be run each day to update the Birdle web app
+#Script to be run each day to update the Birdle web app.
+#
+#The birds of the day are selected from all the available birds
+#The sound for each bird are selected from all available sound files
+#A list of all the data needed for the app, including the days images and sound files
+#are saved to a single list, encased in a file, and copied to the shiny app server's directory.
+
 
 #load libraries
 list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs")
@@ -53,10 +59,13 @@ BirdButtons <- lapply(seq_len(NoOfBirdButtons), function(BirdNo) {
 #Prepare the "Sound" files
 #There are five of them named Sound1.mp3, Sound2.mp3...Sound5.mp3
 #They need to have the correct sound file for the bird that they have been allocated to
+#Each bird can have multiple sound recordings, so need to randomly pick one
 for (SoundIndex in seq_len(NoOfSounds)) {
   RelatedBirdIndex <- SoundBirds[SoundIndex]
   BirdName <- BirdNames[RelatedBirdIndex]
-  BirdSoundFileName <- paste0(BirdName,".mp3")
+  BirdSoundFiles <- list.files(file.path(ProjectSoundFiles),pattern=paste0("^",BirdName,".*\\.mp3$"))
+  BirdSoundFileName <- sample(BirdSoundFiles,1,replace=FALSE)
+  #BirdSoundFileName <- paste0(BirdName,".mp3")
   ThisSoundsFileName <- paste0("Sound",SoundIndex,".mp3")
   file.copy(file.path(ProjectSoundFiles,BirdSoundFileName),file.path(ShinyWWWDirectory,ThisSoundsFileName),overwrite = TRUE)
   #Copy/update the sound files on the shiny server

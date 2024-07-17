@@ -7,15 +7,15 @@
 
 
 #load libraries
-list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs")
+list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs","curl","keyring")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='https://cloud.r-project.org')
 
 librariesToLoad <- list.of.packages[!(list.of.packages %in% (.packages()))]
 if(length(librariesToLoad)) sapply(librariesToLoad, library, character.only = TRUE)
 
-ShinyAppDataDirectory <- "Birdle\\data"
-ShinyWWWDirectory     <- "Birdle\\www"
+ShinyAppDataDirectory <- "Birdle/data"
+ShinyWWWDirectory     <- "Birdle/www"
 ProjectSoundFiles     <-   "SoundFiles"
 
 NoOfSounds <- 5

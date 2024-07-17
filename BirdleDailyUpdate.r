@@ -14,9 +14,9 @@ if(length(new.packages)) install.packages(new.packages,repos='https://cloud.r-pr
 librariesToLoad <- list.of.packages[!(list.of.packages %in% (.packages()))]
 if(length(librariesToLoad)) sapply(librariesToLoad, library, character.only = TRUE)
 
-ShinyAppDataDirectory <- "D:\\Projects\\Birdle\\Birdle\\data"
-ShinyWWWDirectory     <- "D:\\Projects\\Birdle\\Birdle\\www"
-ProjectSoundFiles     <-   "D:\\Projects\\Birdle\\SoundFiles"
+ShinyAppDataDirectory <- "Birdle\\data"
+ShinyWWWDirectory     <- "Birdle\\www"
+ProjectSoundFiles     <-   "SoundFiles"
 
 NoOfSounds <- 5
 AllBirdNames  <- c("Chaffinch","Miromiro","Kakaruai","Thrush","Blackbird",

@@ -5,9 +5,13 @@
 #A list of all the data needed for the app, including the days images and sound files
 #are saved to a single list, encased in a file, and copied to the shiny app server's directory.
 
+#Comment out the following three lines when testing
+con <- file('BirdleDailyUpdate.log', open = "wt")
+sink(con)
+sink(con, type = "message")
 
 #load libraries
-list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs","curl","keyring")
+list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs","curl","keyring","ssh")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages,repos='https://cloud.r-project.org')
 
@@ -68,16 +72,14 @@ for (SoundIndex in seq_len(NoOfSounds)) {
   #BirdSoundFileName <- paste0(BirdName,".mp3")
   ThisSoundsFileName <- paste0("Sound",SoundIndex,".mp3")
   file.copy(file.path(ProjectSoundFiles,BirdSoundFileName),file.path(ShinyWWWDirectory,ThisSoundsFileName),overwrite = TRUE)
-  #Copy/update the sound files on the shiny server
-  curl::curl_upload(file=file.path(ShinyWWWDirectory,paste0("Sound",SoundIndex,".mp3")),
-                    url=paste0("sftp://157.245.105.6/opt/shiny-server/samples/sample-apps/Birdle/www/Sound",SoundIndex,".mp3"), verbose=TRUE,reuse=TRUE,
-                    userpwd = paste0("tim:",keyring::key_get("Rainfall.NZ Shiny Server","tim")),
-                    ssl_verifypeer = 0,
-                    ssl_verifyhost = FALSE
-  )
+  # #Copy/update the sound files on the shiny server
+  # curl::curl_upload(file=file.path(ShinyWWWDirectory,paste0("Sound",SoundIndex,".mp3")),
+  #                   url=paste0("sftp://157.245.105.6/opt/shiny-server/samples/sample-apps/Birdle/www/Sound",SoundIndex,".mp3"), verbose=TRUE,reuse=TRUE,
+  #                   userpwd = paste0("tim:",keyring::key_get("Rainfall.NZ Shiny Server","tim")),
+  #                   ssl_verifypeer = 0,
+  #                   ssl_verifyhost = FALSE
+  # )
 }
-
-
 
 #Put all of these objects in a list and save to an RData file
 BirdleSetupData <- list("NoOfSounds"=NoOfSounds, "BirdNames" = BirdNames,"NoOfBirds"=NoOfBirdButtons,"SoundBirds"=SoundBirds,"SoundButtons"=SoundButtons,"BirdButtons"=BirdButtons)
@@ -85,9 +87,24 @@ saveRDS(BirdleSetupData, file=file.path(ShinyAppDataDirectory,"BirdleInitialisat
 
 #And copy to the Rainfall.NZ's Digital Ocean shiny-server, using curl. Note that I must have write 
 #permissions on the file (and possibly its directory) if it is already in the Shiny Server. 
-curl::curl_upload(file=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"),
-                  url="sftp://157.245.105.6/opt/shiny-server/samples/sample-apps/Birdle/data/BirdleInitialisationData.rds", verbose=TRUE,reuse=TRUE,
-                  userpwd = paste0("tim:",keyring::key_get("Rainfall.NZ Shiny Server","tim")),
-                  ssl_verifypeer = 0,
-                  ssl_verifyhost = FALSE
-)
+# curl::curl_upload(file=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"),
+#                   url="sftp://157.245.105.6/opt/shiny-server/samples/sample-apps/Birdle/data/BirdleInitialisationData.rds", verbose=TRUE,reuse=TRUE,
+#                   userpwd = paste0("tim:",keyring::key_get("Rainfall.NZ Shiny Server","tim")),
+#                   ssl_verifypeer = 0,
+#                   ssl_verifyhost = FALSE
+#                   
+# )
+
+#Open an SSH session and copy the files to the shinyapp server which is the Digital Ocean droplet called RainfallNZ
+#This requires key pairs to be setup and available
+#I generated key pairs using the windows ssh facility, and NOT PuTTYGen
+#I have yet to setup the key pairs from the METSolJobs server to the shinyapps server
+if (all((Sys.info()['sysname'] == "Windows"),(Sys.info()['nodename'] == "DESKTOP-H33OPJ4"))){
+  session <- ssh::ssh_connect("tim@157.245.105.6",verbose=FALSE) #use verbose = TRUE for fault finding.
+} else if ((Sys.info()['sysname'] == "Linux") & (Sys.info()['user'] == "tim")) {
+  session <- ssh::ssh_connect("tim@157.245.105.6")
+}
+ssh::scp_upload(session,files=list.files(ShinyWWWDirectory,paste0("^Sound[1-",NoOfSounds,"]\\.mp3$"),full.names=TRUE),
+                "/opt/shiny-server/samples/sample-apps/Birdle/www")
+ssh::scp_upload(session,files=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"), to="/opt/shiny-server/samples/sample-apps/Birdle/data")
+ssh::ssh_disconnect(session)

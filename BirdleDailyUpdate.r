@@ -11,6 +11,8 @@
 #sink(con)
 #sink(con, type = "message")
 
+print("Birdle update script started")
+
 #load libraries
 list.of.packages <- c("shiny","shinyWidgets","shinyBS","shinyjs","curl","keyring","ssh","this.path")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]

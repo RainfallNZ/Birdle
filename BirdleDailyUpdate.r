@@ -5,6 +5,13 @@
 #A list of all the data needed for the app, including the days images and sound files
 #are saved to a single list, encased in a file, and copied to the shiny app server's directory.
 
+if (!require(rollbar)) install.packages("rollbar",repos='https://cloud.r-project.org'); library(rollbar)
+
+#Setup Rollbar process monitoring configuration
+rollbar::rollbar.configure(access_token = '2358e1c706cf49a9804faf995c0195b5')
+rollbar::rollbar.info("Birdle update script started")
+print("Birdle update script started")
+
 #Log to a file, sometimes useful, sometimes not, gets saved to working directory
 #which may not be where you think it is
 #con <- file('BirdleDailyUpdate.log', open = "wt")
@@ -97,4 +104,6 @@ ssh::scp_upload(session,files=list.files(ShinyWWWDirectory,paste0("^Sound[1-",No
                 "/opt/shiny-server/samples/sample-apps/Birdle/www")
 ssh::scp_upload(session,files=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"), to="/opt/shiny-server/samples/sample-apps/Birdle/data")
 ssh::ssh_disconnect(session)
-print("Birdle Script finished")
+
+rollbar::rollbar.info("Birdle update script ended")
+print("Birdle update script ended")

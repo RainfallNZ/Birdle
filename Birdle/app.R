@@ -5,7 +5,7 @@ if (!require(shinyWidgets)) install.packages('shinyWidgets'); library(shinyWidge
 if (!require(shinyBS)) install.packages('shinyBS'); library(shinyBS) 
 if (!require(shinyjs)) install.packages('shinyjs'); library(shinyjs) 
 
-BirdleSetupData <- readRDS(file="data/BirdleInitialisationData.rds")
+BirdleSetupData <<- readRDS(file="data/BirdleInitialisationData.rds")
 
 list2env(BirdleSetupData,envir = .GlobalEnv)
 
@@ -42,6 +42,7 @@ ui <- tagList(
 
 # Define server logic required to connect sounds to birds
 server <- function(input, output, session) {
+  
   observeEventTrigger <- reactiveVal()
   CurrentSound <- reactiveVal(0)
   Answered       <- reactiveValues(Sound1=0,Sound2=0,Sound3=0,Sound4=0,Sound5=0)
@@ -66,7 +67,7 @@ server <- function(input, output, session) {
     #Figure out which button was clicked
     observeEventTrigger(req(input$changed))
     SoundNo <- gsub("Sound","",observeEventTrigger())
-    print(SoundNo)
+    print(paste("Bird Sound Number:",SoundNo))
     
     #Update the reactive value that keeps track of which sound was last played. This is needed for other observers.
     isolate({CurrentSound(SoundNo)})

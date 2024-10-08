@@ -103,6 +103,7 @@ if (all((Sys.info()['sysname'] == "Windows"),(Sys.info()['nodename'] == "DESKTOP
 ssh::scp_upload(session,files=list.files(ShinyWWWDirectory,paste0("^Sound[1-",NoOfSounds,"]\\.mp3$"),full.names=TRUE),
                 "/opt/shiny-server/samples/sample-apps/Birdle/www")
 ssh::scp_upload(session,files=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"), to="/opt/shiny-server/samples/sample-apps/Birdle/data")
+ssh::scp_upload(session,files=file.path("Birdle","app.R"), to="/opt/shiny-server/samples/sample-apps/Birdle")
 ssh::ssh_disconnect(session)
 
 rollbar::rollbar.info("Birdle update script ended")

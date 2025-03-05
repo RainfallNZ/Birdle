@@ -96,14 +96,14 @@ saveRDS(BirdleSetupData, file=file.path(ShinyAppDataDirectory,"BirdleInitialisat
 #I generated key pairs using the windows ssh facility, and NOT PuTTYGen
 #I have yet to setup the key pairs from the METSolJobs server to the shinyapps server
 if (all((Sys.info()['sysname'] == "Windows"),(Sys.info()['nodename'] == "DESKTOP-H33OPJ4"))){
-  session <- ssh::ssh_connect("tim@157.245.105.6",verbose=FALSE) #use verbose = TRUE for fault finding.
+  session <- ssh::ssh_connect("tim@134.199.161.228",verbose=FALSE) #use verbose = TRUE for fault finding.
 } else if ((Sys.info()['sysname'] == "Linux") & (Sys.info()['user'] == "tim")) {
-  session <- ssh::ssh_connect("tim@157.245.105.6")
+  session <- ssh::ssh_connect("tim@134.199.161.228")
 }
 ssh::scp_upload(session,files=list.files(ShinyWWWDirectory,paste0("^Sound[1-",NoOfSounds,"]\\.mp3$"),full.names=TRUE),
-                "/opt/shiny-server/samples/sample-apps/Birdle/www")
-ssh::scp_upload(session,files=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"), to="/opt/shiny-server/samples/sample-apps/Birdle/data")
-ssh::scp_upload(session,files=file.path("Birdle","app.R"), to="/opt/shiny-server/samples/sample-apps/Birdle")
+                "/opt/shiny-server/samples/production-apps/Birdle/www")
+ssh::scp_upload(session,files=file.path(ShinyAppDataDirectory,"BirdleInitialisationData.rds"), to="/opt/shiny-server/samples/production-apps/Birdle/data")
+ssh::scp_upload(session,files=file.path("Birdle","app.R"), to="/opt/shiny-server/samples/production-apps/Birdle")
 ssh::ssh_disconnect(session)
 
 rollbar::rollbar.info("Birdle update script ended")

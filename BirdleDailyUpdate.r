@@ -5,11 +5,6 @@
 #A list of all the data needed for the app, including the days images and sound files
 #are saved to a single list, encased in a file, and copied to the shiny app server's directory.
 
-if (!require(rollbar)) install.packages("rollbar",repos='https://cloud.r-project.org'); library(rollbar)
-
-#Setup Rollbar process monitoring configuration
-rollbar::rollbar.configure(access_token = '2358e1c706cf49a9804faf995c0195b5')
-rollbar::rollbar.info("Birdle update script started")
 print("Birdle update script started")
 
 #Log to a file, sometimes useful, sometimes not, gets saved to working directory
@@ -96,9 +91,9 @@ saveRDS(BirdleSetupData, file=file.path(ShinyAppDataDirectory,"BirdleInitialisat
 #I generated key pairs using the windows ssh facility, and NOT PuTTYGen
 #I have yet to setup the key pairs from the METSolJobs server to the shinyapps server
 if (all((Sys.info()['sysname'] == "Windows"),(Sys.info()['nodename'] == "DESKTOP-H33OPJ4"))){
-  session <- ssh::ssh_connect("tim@134.199.161.228",verbose=FALSE) #use verbose = TRUE for fault finding.
+  session <- ssh::ssh_connect("tim@170.64.182.68",verbose=FALSE) #use verbose = TRUE for fault finding.
 } else if ((Sys.info()['sysname'] == "Linux") & (Sys.info()['user'] == "tim")) {
-  session <- ssh::ssh_connect("tim@134.199.161.228")
+  session <- ssh::ssh_connect("tim@170.64.182.68")
 }
 ssh::scp_upload(session,files=list.files(ShinyWWWDirectory,paste0("^Sound[1-",NoOfSounds,"]\\.mp3$"),full.names=TRUE),
                 "/opt/shiny-server/samples/production-apps/Birdle/www")
@@ -106,5 +101,4 @@ ssh::scp_upload(session,files=file.path(ShinyAppDataDirectory,"BirdleInitialisat
 ssh::scp_upload(session,files=file.path("Birdle","app.R"), to="/opt/shiny-server/samples/production-apps/Birdle")
 ssh::ssh_disconnect(session)
 
-rollbar::rollbar.info("Birdle update script ended")
 print("Birdle update script ended")
